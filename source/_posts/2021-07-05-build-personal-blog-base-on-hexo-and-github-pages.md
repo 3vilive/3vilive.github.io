@@ -8,15 +8,6 @@ categories:
     - 实践
 ---
 
-## 目录
-
-- [目录](#目录)
-- [Hexo 和 Github Pages 是什么？](#hexo-和-github-pages-是什么)
-- [使用 Hexo 生成个人博客页面](#使用-hexo-生成个人博客页面)
-- [部署到 Github Pages 上](#部署到-github-pages-上)
-- [开始写作和更新](#开始写作和更新)
-- [参考](#参考)
-
 ## Hexo 和 Github Pages 是什么？
 
 Hexo 是什么？
@@ -178,6 +169,17 @@ INFO  Created: ~/dev/3vilive-blog/source/_posts/2021-07-05-build-personal-blog-b
 在写作期间，可以通过 `hexo server` 来预览最终效果。
 
 写作完毕后，通过 `hexo deploy` 命令，就可以把文章发布啦。
+
+## 自定义主题
+
+默认的主题有点简陋，这里我找了一个主题还不错：
+
+[https://github.com/fluid-dev/hexo-theme-fluid](https://github.com/fluid-dev/hexo-theme-fluid)
+
+
+直接跟着里面的教程安装，最终效果如下：
+
+
 
 
 
