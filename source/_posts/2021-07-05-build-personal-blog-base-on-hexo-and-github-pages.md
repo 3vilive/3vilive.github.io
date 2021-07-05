@@ -168,7 +168,7 @@ INFO  Created: ~/dev/3vilive-blog/source/_posts/2021-07-05-build-personal-blog-b
 
 在写作期间，可以通过 `hexo server` 来预览最终效果。
 
-写作完毕后，通过 `hexo deploy` 命令，就可以把文章发布啦。
+写作完毕后，通过 `hexo generate` 和 `hexo deploy` 命令，就可以把文章发布啦。
 
 ## 自定义主题
 
@@ -179,9 +179,9 @@ INFO  Created: ~/dev/3vilive-blog/source/_posts/2021-07-05-build-personal-blog-b
 
 直接跟着里面的教程安装，最终效果如下：
 
+![](use-theme-1.png)
 
-
-
+![](use-theme-2.png)
 
 
 ## 参考
