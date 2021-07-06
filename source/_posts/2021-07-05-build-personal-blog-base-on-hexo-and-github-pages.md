@@ -6,6 +6,7 @@ tags:
     - Github Pages
 categories:
     - 实践
+index_img: /2021/07/05/build-personal-blog-base-on-hexo-and-github-pages/hexoandgithubpages.png
 ---
 
 ## Hexo 和 Github Pages 是什么？
