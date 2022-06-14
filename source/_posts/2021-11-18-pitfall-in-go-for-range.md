@@ -1,6 +1,8 @@
 ---
 title: Go - for range 的陷阱
 date: 2021-11-18 20:49:55
+description: for range 是 Go 中最常用的语句之一，但是新手可能不知道在 Go 的 for range 里的中循环变量是共享的。这可能会引起一些问题。
+index_img: img/gopher.png
 tags: 
     - Go
 categories:
