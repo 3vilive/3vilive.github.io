@@ -1,0 +1,519 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/open-box.png">
+  <link rel="icon" href="/img/open-box.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="Go 从 1.18 版本开始支持泛型。一起看看怎么回事。">
+  <meta name="author" content="3vilive">
+  <meta name="keywords" content="">
+  
+  <title>尝试在工程中使用 Go 泛型 - 3vilive&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"3vilive.github.io","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":20,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="3vilive's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>3vilive's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/HINA-011.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="尝试在工程中使用 Go 泛型">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      3vilive
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2023-08-14 11:41" pubdate>
+        2023年8月14日 中午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.6k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      24
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">尝试在工程中使用 Go 泛型</h1>
+            
+            <div class="markdown-body">
+              <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>Go 从 1.18 版本开始支持泛型。一起看看怎么回事。</p>
+<h1 id="从-max、min、sum-开始"><a href="#从-max、min、sum-开始" class="headerlink" title="从 max、min、sum 开始"></a>从 max、min、sum 开始</h1><p>找出一个 slice 的最大值、最小值和对一个 slice 求和是很常见的操作，通常我们需要对每种类型的 slice 的都单独实现一套函数操作：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">MaxOfInts</span><span class="hljs-params">(values []<span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span></span> &#123; ... &#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">MaxOfFloats</span><span class="hljs-params">(values []<span class="hljs-keyword">float32</span>)</span> <span class="hljs-title">float32</span></span> &#123; ... &#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">MinOfInts</span><span class="hljs-params">(values []<span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span></span> &#123; ... &#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">MinOfFloats</span><span class="hljs-params">(values []<span class="hljs-keyword">float32</span>)</span> <span class="hljs-title">float32</span></span> &#123; ... &#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">SumInts</span><span class="hljs-params">(values []<span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span></span> &#123; ... &#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">SumFloats</span><span class="hljs-params">(values []<span class="hljs-keyword">float32</span>)</span> <span class="hljs-title">float32</span></span> &#123; ... &#125;<br></code></pre></td></tr></table></figure>
+
+<p>甚至里面的代码都是一样的：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">SumInts</span><span class="hljs-params">(values []<span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span></span> &#123;<br>    <span class="hljs-keyword">var</span> s = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> _, v := <span class="hljs-keyword">range</span> values &#123;<br>        s += v<br>    &#125;<br>    <span class="hljs-keyword">return</span> s<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">SumFloats</span><span class="hljs-params">(values []<span class="hljs-keyword">float32</span>)</span> <span class="hljs-title">float32</span></span> &#123;<br>    <span class="hljs-keyword">var</span> s = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> _, v := <span class="hljs-keyword">range</span> values &#123;<br>        s += v<br>    &#125;<br>    <span class="hljs-keyword">return</span> s<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>本着 DRY（Don’t Repeat Yourself） 原则，有些人试图使用其他方法来解决这个问题，比如使用反射、代码生成器。反射复杂且性能一般，代码生成器又需要引入新的依赖。</p>
+<p>在 Go 推出泛型后带来了新的方案，通过泛型，我们的求和函数支持处理 <code>[]int</code> 和 <code>[]float</code>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Sum</span>[<span class="hljs-title">T</span> <span class="hljs-title">int</span> | <span class="hljs-title">float32</span>]<span class="hljs-params">(values []T)</span> <span class="hljs-title">T</span></span> &#123;<br>    <span class="hljs-keyword">var</span> s T<br>    <span class="hljs-keyword">for</span> _, v := <span class="hljs-keyword">range</span> values &#123;<br>        s += v<br>    &#125;<br>    <span class="hljs-keyword">return</span> s<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>    fmt.Printf(<span class="hljs-string">&quot;sum ints: %d\n&quot;</span>, Sum([]<span class="hljs-keyword">int</span>&#123;<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>&#125;)) <span class="hljs-comment">// sum ints: 15</span><br>    fmt.Printf(<span class="hljs-string">&quot;sum floats: %.2f\n&quot;</span>, Sum([]<span class="hljs-keyword">float32</span>&#123;<span class="hljs-number">1.1</span>, <span class="hljs-number">2.2</span>, <span class="hljs-number">3.3</span>, <span class="hljs-number">4.4</span>, <span class="hljs-number">5.5</span>&#125;)) <span class="hljs-comment">// sum floats: 16.50</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>仔细看泛型函数 Sum 的定义：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Sum</span>[<span class="hljs-title">T</span> <span class="hljs-title">int</span> | <span class="hljs-title">float32</span>]<span class="hljs-params">(values []T)</span> <span class="hljs-title">T</span></span><br></code></pre></td></tr></table></figure>
+
+<p>与一般的函数相比，在函数名的后面多了用方括号的这一段，称为类型参数（type parameters）：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs go">[T <span class="hljs-keyword">int</span> | <span class="hljs-keyword">float32</span>]<br></code></pre></td></tr></table></figure>
+
+<p>其中 <code>T</code> 为类型参数名称、<code>int | float32</code> 为类型参数约束，代表 <code>T</code> 允许是 <code>int</code> 或者 <code>float32</code>。</p>
+<p>根据上面的例子，泛型版本 <code>Min</code>、<code>Max</code> 也手到擒来：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Min</span>[<span class="hljs-title">T</span> <span class="hljs-title">int</span> | <span class="hljs-title">float32</span>]<span class="hljs-params">(v T, values ...T)</span> <span class="hljs-title">T</span></span> &#123;<br>	min := v<br><br>	<span class="hljs-keyword">for</span> i := <span class="hljs-keyword">range</span> values &#123;<br>		<span class="hljs-keyword">if</span> values[i] &lt; min &#123;<br>			min = values[i]<br>		&#125;<br>	&#125;<br><br>	<span class="hljs-keyword">return</span> min<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Max</span>[<span class="hljs-title">T</span> <span class="hljs-title">int</span> | <span class="hljs-title">float32</span>]<span class="hljs-params">(v T, values ...T)</span> <span class="hljs-title">T</span></span> &#123;<br>	max := v<br><br>	<span class="hljs-keyword">for</span> i := <span class="hljs-keyword">range</span> values &#123;<br>		<span class="hljs-keyword">if</span> values[i] &gt; max &#123;<br>			max = values[i]<br>		&#125;<br>	&#125;<br><br>	<span class="hljs-keyword">return</span> max<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+<h1 id="类型参数约束"><a href="#类型参数约束" class="headerlink" title="类型参数约束"></a>类型参数约束</h1><p>类型约束定义了允许作为类型参数的一组类型。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Min</span>[<span class="hljs-title">T</span> <span class="hljs-title">int</span> | <span class="hljs-title">float32</span>]<span class="hljs-params">(v T, values ...T)</span> <span class="hljs-title">T</span></span><br></code></pre></td></tr></table></figure>
+
+<p>比如这里 T 的约束，就是 <code>int | float32</code>，允许使用 <code>int</code> 或者 <code>float32</code> 作为类型参数。</p>
+<p>假设我们需要让 <code>Min</code>、<code>Max</code>、<code>Sum</code> 这几个泛型函数传入支持 <code>string</code> 类型，我们可以这样做：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Min</span>[<span class="hljs-title">T</span> <span class="hljs-title">int</span> | <span class="hljs-title">float32</span> | <span class="hljs-title">string</span>]<span class="hljs-params">(v T, values ...T)</span> <span class="hljs-title">T</span></span> &#123; ... &#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Max</span>[<span class="hljs-title">T</span> <span class="hljs-title">int</span> | <span class="hljs-title">float32</span> | <span class="hljs-title">string</span>]<span class="hljs-params">(v T, values ...T)</span> <span class="hljs-title">T</span></span> &#123; ... &#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Sum</span>[<span class="hljs-title">T</span> <span class="hljs-title">int</span> | <span class="hljs-title">float32</span> | <span class="hljs-title">string</span>]<span class="hljs-params">(values []T)</span> <span class="hljs-title">T</span></span> &#123; ... &#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="使用-interface-定义一组类型"><a href="#使用-interface-定义一组类型" class="headerlink" title="使用 interface 定义一组类型"></a>使用 interface 定义一组类型</h2><p>我们修改了三个地方，使得这三个函数支持传入 <code>string</code> 类型，有没有更好的方法呢，答案是有的。</p>
+<p>在过去 <code>interface</code> 用于定义一组方法，现在 <code>interface</code> 可以用于定义一组类型：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> MyTypeSet <span class="hljs-keyword">interface</span> &#123;<br>    <span class="hljs-keyword">int</span> | <span class="hljs-keyword">float32</span> | <span class="hljs-keyword">string</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>我们可以将它用于类型约束：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Min</span>[<span class="hljs-title">T</span> <span class="hljs-title">MyTypeSet</span>]<span class="hljs-params">(v T, values ...T)</span> <span class="hljs-title">T</span></span> &#123; ... &#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Max</span>[<span class="hljs-title">T</span> <span class="hljs-title">MyTypeSet</span>]<span class="hljs-params">(v T, values ...T)</span> <span class="hljs-title">T</span></span> &#123; ... &#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Sum</span>[<span class="hljs-title">T</span> <span class="hljs-title">MyTypeSet</span>]<span class="hljs-params">(values []T)</span> <span class="hljs-title">T</span></span> &#123; ... &#125;<br></code></pre></td></tr></table></figure>
+
+<p>如果后续我们还需要支持其他类型，就可以直接修改 <code>MyTypeSet</code> 即可。</p>
+<p>另外 <code>[T int | float32 | string]</code> 其实是 <code>[T interface &#123; int | float32 | string &#125;]</code> 的语法糖，允许忽略 <code>interface&#123;&#125;</code> 使得结构紧凑。</p>
+<h2 id="支持类型别名"><a href="#支持类型别名" class="headerlink" title="支持类型别名"></a>支持类型别名</h2><p>我们定义一个 <code>MyInt</code> 作为 <code>int</code> 的别名，尝试在 <code>Sum</code> 中使用它：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> MyInt <span class="hljs-keyword">int</span><br><br>...<br><br><span class="hljs-keyword">var</span> data []MyInt = ...<br><span class="hljs-keyword">var</span> sumOfData = Sum(data)<br></code></pre></td></tr></table></figure>
+
+<p>编译会提示如下错误：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">MyInt</span> does not implement MyTypeSet (possibly missing <span class="hljs-regexp">~ for</span> int in constraint MyTypeSet)<br></code></pre></td></tr></table></figure>
+
+<p>这里提示我们可能在 <code>MyTypeSet</code> 约束中的 <code>int</code> 缺少 <code>~</code> 符号。修改约束，添加上 <code>~</code> 符号：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> MyTypeSet <span class="hljs-keyword">interface</span> &#123;<br>    ~<span class="hljs-keyword">int</span> | <span class="hljs-keyword">float32</span> | <span class="hljs-keyword">string</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>再次编译，没有问题。那么 <code>~</code> 符号的作用是什么呢？我们看看官方文档的定义：</p>
+<blockquote>
+<p>~T notation stands for “all types that have the underlying type T”</p>
+</blockquote>
+<p>~T 符号表示“具有底层类型 T 的所有类型”。</p>
+<p>那么 <code>~int</code> 就表示底层类型为 <code>int</code> 的所有类型，自然就可以处理 <code>MyInt</code>。</p>
+<h2 id="常用的内建的类型约束"><a href="#常用的内建的类型约束" class="headerlink" title="常用的内建的类型约束"></a>常用的内建的类型约束</h2><ul>
+<li>any：interface{} 的别名，等于没有约束</li>
+<li>comparable：类型支持 <code>==</code> 和 <code>!=</code> 操作</li>
+</ul>
+<p>另外 <code>golang.org/x/exp</code> 定义了一组有用的类型约束，点击这里查看：<a target="_blank" rel="noopener" href="https://pkg.go.dev/golang.org/x/exp/constraints">constraints</a></p>
+<h1 id="一些例子"><a href="#一些例子" class="headerlink" title="一些例子"></a>一些例子</h1><h2 id="简单实现一个泛型-Set"><a href="#简单实现一个泛型-Set" class="headerlink" title="简单实现一个泛型 Set"></a>简单实现一个泛型 Set</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Set[T comparable] <span class="hljs-keyword">struct</span> &#123;<br>	inner <span class="hljs-keyword">map</span>[T]<span class="hljs-keyword">struct</span>&#123;&#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">NewSet</span>[<span class="hljs-title">T</span> <span class="hljs-title">comparable</span>]<span class="hljs-params">(values ...T)</span> *<span class="hljs-title">Set</span>[<span class="hljs-title">T</span>]</span> &#123;<br>	s := &amp;Set[T]&#123;<br>		inner: <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[T]<span class="hljs-keyword">struct</span>&#123;&#125;),<br>	&#125;<br><br>	<span class="hljs-keyword">for</span> _, v := <span class="hljs-keyword">range</span> values &#123;<br>		s.Add(v)<br>	&#125;<br><br>	<span class="hljs-keyword">return</span> s<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s *Set[T])</span> <span class="hljs-title">Add</span><span class="hljs-params">(v T)</span></span> &#123;<br>	s.inner[v] = <span class="hljs-keyword">struct</span>&#123;&#125;&#123;&#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s *Set[T])</span> <span class="hljs-title">Remove</span><span class="hljs-params">(v T)</span></span> &#123;<br>	<span class="hljs-built_in">delete</span>(s.inner, v)<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s *Set[T])</span> <span class="hljs-title">Contains</span><span class="hljs-params">(v T)</span> <span class="hljs-title">bool</span></span> &#123;<br>	_, ok := s.inner[v]<br>	<span class="hljs-keyword">return</span> ok<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s *Set[T])</span> <span class="hljs-title">Len</span><span class="hljs-params">()</span> <span class="hljs-title">int</span></span> &#123;<br>	<span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(s.inner)<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s *Set[T])</span> <span class="hljs-title">Values</span><span class="hljs-params">()</span> []<span class="hljs-title">T</span></span> &#123;<br>	values := <span class="hljs-built_in">make</span>([]T, <span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(s.inner))<br>	<span class="hljs-keyword">for</span> v := <span class="hljs-keyword">range</span> s.inner &#123;<br>		values = <span class="hljs-built_in">append</span>(values, v)<br>	&#125;<br><br>	<span class="hljs-keyword">return</span> values<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="使用-gorm-查询的常用操作"><a href="#使用-gorm-查询的常用操作" class="headerlink" title="使用 gorm 查询的常用操作"></a>使用 gorm 查询的常用操作</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">QueryObjectsByCondsWithDb</span>[<span class="hljs-title">T</span> <span class="hljs-title">any</span>]<span class="hljs-params">(db *gorm.DB, conds ...<span class="hljs-keyword">interface</span>&#123;&#125;)</span> <span class="hljs-params">([]T, error)</span></span> &#123;<br>	<span class="hljs-keyword">var</span> objects []T<br>	err := db.Find(&amp;objects, conds...).Error<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span>, err<br>	&#125;<br><br>	<span class="hljs-keyword">return</span> objects, <span class="hljs-literal">nil</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">QueryObjectMapByCondsWithDb</span>[<span class="hljs-title">K</span> <span class="hljs-title">comparable</span>, <span class="hljs-title">V</span> <span class="hljs-title">any</span>]<span class="hljs-params">(</span></span><br><span class="hljs-params"><span class="hljs-function">	db *gorm.DB,</span></span><br><span class="hljs-params"><span class="hljs-function">	keyOf <span class="hljs-keyword">func</span>(v *V)</span> <span class="hljs-title">K</span>,</span><br>	conds ...<span class="hljs-keyword">interface</span>&#123;&#125;,<br>) (<span class="hljs-keyword">map</span>[K]*V, error) &#123;<br>	<span class="hljs-keyword">var</span> objects []V<br>	err := db.Find(&amp;objects, conds...).Error<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span>, err<br>	&#125;<br><br>	objectMap := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[K]*V)<br>	<span class="hljs-keyword">for</span> i := <span class="hljs-keyword">range</span> objects &#123;<br>		v := &amp;objects[i]<br>		objectMap[keyOf(v)] = v<br>	&#125;<br><br>	<span class="hljs-keyword">return</span> objectMap, <span class="hljs-literal">nil</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+<h1 id="对性能的影响"><a href="#对性能的影响" class="headerlink" title="对性能的影响"></a>对性能的影响</h1><p>我们定义一个 IntSum 和一个 GenericSum：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> MyTypeSet <span class="hljs-keyword">interface</span> &#123;<br>	~<span class="hljs-keyword">int</span> | ~<span class="hljs-keyword">float32</span> | ~<span class="hljs-keyword">string</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">GenericSum</span>[<span class="hljs-title">T</span> <span class="hljs-title">MyTypeSet</span>]<span class="hljs-params">(values []T)</span> <span class="hljs-title">T</span></span> &#123;<br>	<span class="hljs-keyword">var</span> s T<br>	<span class="hljs-keyword">for</span> _, v := <span class="hljs-keyword">range</span> values &#123;<br>		s += v<br>	&#125;<br>	<span class="hljs-keyword">return</span> s<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">IntSum</span><span class="hljs-params">(values []<span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span></span> &#123;<br>	<span class="hljs-keyword">var</span> s <span class="hljs-keyword">int</span><br>	<span class="hljs-keyword">for</span> _, v := <span class="hljs-keyword">range</span> values &#123;<br>		s += v<br>	&#125;<br>	<span class="hljs-keyword">return</span> s<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>增加性能测试的代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">BenchmarkGenericSum</span><span class="hljs-params">(b *testing.B)</span></span> &#123;<br>	<span class="hljs-keyword">var</span> data []<span class="hljs-keyword">int</span><br>	<span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++ &#123;<br>		data = <span class="hljs-built_in">append</span>(data, i)<br>	&#125;<br><br>	<span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; b.N; i++ &#123;<br>		_ = GenericSum(data)<br>	&#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">BenchmarkIntSum</span><span class="hljs-params">(b *testing.B)</span></span> &#123;<br>	<span class="hljs-keyword">var</span> data []<span class="hljs-keyword">int</span><br>	<span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++ &#123;<br>		data = <span class="hljs-built_in">append</span>(data, i)<br>	&#125;<br><br>	<span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; b.N; i++ &#123;<br>		_ = IntSum(data)<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>运行测试，获取测试结果：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">goos</span>: darwin<br><span class="hljs-attribute">goarch</span>: amd<span class="hljs-number">64</span><br><span class="hljs-attribute">cpu</span>: Intel(R) Core(TM) i<span class="hljs-number">5</span>-<span class="hljs-number">7267</span>U CPU @ <span class="hljs-number">3</span>.<span class="hljs-number">10</span>GHz<br><span class="hljs-attribute">BenchmarkGenericSum</span>-<span class="hljs-number">4</span>   <span class="hljs-number">24427492</span>	        <span class="hljs-number">50</span>.<span class="hljs-number">50</span> ns/op	       <span class="hljs-number">0</span> B/op	       <span class="hljs-number">0</span> allocs/op<br><span class="hljs-attribute">BenchmarkIntSum</span>-<span class="hljs-number">4</span>   	<span class="hljs-number">31268010</span>	        <span class="hljs-number">38</span>.<span class="hljs-number">90</span> ns/op	       <span class="hljs-number">0</span> B/op	       <span class="hljs-number">0</span> allocs/op<br></code></pre></td></tr></table></figure>
+
+<p>可以看到泛型版本比普通版本慢了差不多 25%，这是为什么？</p>
+<p>这和 Go 的泛型实现有关，具体可以参考这篇文章<a target="_blank" rel="noopener" href="https://www.bmpi.dev/dev/deep-in-program-language/how-to-implement-generics">编程语言是如何实现泛型的</a>。</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://go.dev/doc/tutorial/generics">Tutorial: Getting started with generics</a></li>
+<li><a target="_blank" rel="noopener" href="https://go.dev/blog/comparable">All your comparable types</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.bmpi.dev/dev/deep-in-program-language/how-to-implement-generics">编程语言是如何实现泛型的</a></li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Go/">Go</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Go/">Go</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Generics/">Generics</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/06/14/type-and-mutability-of-variable-in-rust/">
+                        <span class="hidden-mobile">Rust 中变量的类型和可变性</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

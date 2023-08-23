@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>3vilive&#39;s blog</title>
+  <icon>https://3vilive.github.io/img/open-box.png</icon>
+  <subtitle>Good Luck Have Fun</subtitle>
+  <link href="https://3vilive.github.io/atom.xml" rel="self"/>
+  
+  <link href="https://3vilive.github.io/"/>
+  <updated>2023-08-23T08:25:55.830Z</updated>
+  <id>https://3vilive.github.io/</id>
+  
+  <author>
+    <name>3vilive</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>尝试在工程中使用 Go 泛型</title>
+    <link href="https://3vilive.github.io/2023/08/14/try-to-use-go-generics-in-the-project/"/>
+    <id>https://3vilive.github.io/2023/08/14/try-to-use-go-generics-in-the-project/</id>
+    <published>2023-08-14T03:41:17.000Z</published>
+    <updated>2023-08-23T08:25:55.830Z</updated>
+    
+    
+    <summary type="html">Go 从 1.18 版本开始支持泛型。一起看看怎么回事。</summary>
+    
+    
+    
+    <category term="Go" scheme="https://3vilive.github.io/categories/Go/"/>
+    
+    
+    <category term="Go" scheme="https://3vilive.github.io/tags/Go/"/>
+    
+    <category term="Generics" scheme="https://3vilive.github.io/tags/Generics/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Rust 中变量的类型和可变性</title>
+    <link href="https://3vilive.github.io/2022/06/14/type-and-mutability-of-variable-in-rust/"/>
+    <id>https://3vilive.github.io/2022/06/14/type-and-mutability-of-variable-in-rust/</id>
+    <published>2022-06-14T08:09:40.000Z</published>
+    <updated>2023-08-14T03:33:02.315Z</updated>
+    
+    
+    <summary type="html">初学 Rust 的时候，容易将可变引用类型和自身可变性弄混，下面以几个例子来说明其中的区别。</summary>
+    
+    
+    
+    <category term="Rust" scheme="https://3vilive.github.io/categories/Rust/"/>
+    
+    
+    <category term="Rust" scheme="https://3vilive.github.io/tags/Rust/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Go - for range 的陷阱</title>
+    <link href="https://3vilive.github.io/2021/11/18/pitfall-in-go-for-range/"/>
+    <id>https://3vilive.github.io/2021/11/18/pitfall-in-go-for-range/</id>
+    <published>2021-11-18T12:49:55.000Z</published>
+    <updated>2023-08-14T03:33:02.315Z</updated>
+    
+    
+    <summary type="html">for range 是 Go 中最常用的语句之一，但是新手可能不知道在 Go 的 for range 里的中循环变量是共享的。这可能会引起一些问题。</summary>
+    
+    
+    
+    <category term="Go" scheme="https://3vilive.github.io/categories/Go/"/>
+    
+    
+    <category term="Go" scheme="https://3vilive.github.io/tags/Go/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>基于 Hexo 和 Github Pages 服务搭建个人博客实践</title>
+    <link href="https://3vilive.github.io/2021/07/05/build-personal-blog-base-on-hexo-and-github-pages/"/>
+    <id>https://3vilive.github.io/2021/07/05/build-personal-blog-base-on-hexo-and-github-pages/</id>
+    <published>2021-07-05T12:39:05.000Z</published>
+    <updated>2023-08-14T03:33:02.260Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;Hexo-和-Github-Pages-是什么？&quot;&gt;&lt;a href=&quot;#Hexo-和-Github-Pages-是什么？&quot; class=&quot;headerlink&quot; title=&quot;Hexo 和 Github Pages 是什么？&quot;&gt;&lt;/a&gt;Hexo 和 Github</summary>
+        
+      
+    
+    
+    
+    <category term="实践" scheme="https://3vilive.github.io/categories/%E5%AE%9E%E8%B7%B5/"/>
+    
+    
+    <category term="Hexo" scheme="https://3vilive.github.io/tags/Hexo/"/>
+    
+    <category term="Github Pages" scheme="https://3vilive.github.io/tags/Github-Pages/"/>
+    
+  </entry>
+  
+</feed>
