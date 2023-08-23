@@ -281,6 +281,158 @@ func QueryObjectMapByCondsWithDb[K comparable, V any](
 }
 ```
 
+## 尝试实现类似 Rust 风格的迭代器
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+type FilterFn[T any] func(v T) bool
+type MapFn[T any] func(v T) T
+
+type Filter[T any] struct {
+	Apply FilterFn[T]
+}
+
+func (f Filter[T]) Next(v T) (T, bool) {
+	return v, f.Apply(v)
+}
+
+type Map[T any] struct {
+	Apply MapFn[T]
+}
+
+func (m Map[T]) Next(v T) (T, bool) {
+	return m.Apply(v), true
+}
+
+type Take[T any] struct {
+	n     int
+	taken int
+}
+
+func (t *Take[T]) Next(v T) (T, bool) {
+	if t.taken >= t.n {
+		return v, false
+	}
+
+	t.taken += 1
+	return v, true
+}
+
+type Skip[T any] struct {
+	n       int
+	skipped int
+}
+
+func (t *Skip[T]) Next(v T) (T, bool) {
+	if t.skipped < t.n {
+		t.skipped += 1
+		return v, false
+	}
+
+	return v, true
+}
+
+type IteratorNext[T any] interface {
+	Next(v T) (T, bool)
+}
+
+type Iterator[T any] struct {
+	inner      []T
+	operations []IteratorNext[T]
+}
+
+func (iter *Iterator[T]) Filter(fn FilterFn[T]) *Iterator[T] {
+	iter.operations = append(iter.operations, &Filter[T]{
+		Apply: fn,
+	})
+
+	return iter
+}
+
+func (iter *Iterator[T]) Map(fn MapFn[T]) *Iterator[T] {
+	iter.operations = append(iter.operations, &Map[T]{
+		Apply: fn,
+	})
+
+	return iter
+}
+
+func (iter *Iterator[T]) Take(n int) *Iterator[T] {
+	iter.operations = append(iter.operations, &Take[T]{
+		n: n,
+	})
+
+	return iter
+}
+
+func (iter *Iterator[T]) Skip(n int) *Iterator[T] {
+	iter.operations = append(iter.operations, &Skip[T]{
+		n: n,
+	})
+
+	return iter
+}
+
+func (iter *Iterator[T]) applyOperations(v T) (T, bool) {
+	var (
+		tmp  = v
+		keep = false
+	)
+	for i := range iter.operations {
+		tmp, keep = iter.operations[i].Next(tmp)
+		if !keep {
+			return tmp, keep
+		}
+	}
+
+	return tmp, keep
+}
+
+func (iter *Iterator[T]) Collect() []T {
+	var result []T
+
+	for i := range iter.inner {
+		v, keep := iter.applyOperations(iter.inner[i])
+		if !keep {
+			continue
+		}
+
+		result = append(result, v)
+	}
+
+	return result
+}
+
+func (iter *Iterator[T]) Count() int {
+	return len(iter.Collect())
+}
+
+func IntoInterator[T any](ss []T) *Iterator[T] {
+	return &Iterator[T]{
+		inner: ss,
+	}
+}
+
+func main() {
+	var data []int
+	for i := 0; i < 100; i++ {
+		data = append(data, i)
+	}
+	data = IntoInterator(data).
+		Filter(func(v int) bool { return v%2 == 0 }).
+		Map(func(v int) int { return 2 * v }).
+		Skip(5).
+		Take(5).
+		Collect()
+
+	fmt.Printf("data: %#v\n", data) // data: []int{20, 24, 28, 32, 36}
+}
+```
 
 # 对性能的影响
 
