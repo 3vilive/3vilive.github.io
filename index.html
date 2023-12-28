@@ -181,6 +181,68 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2023/12/28/mysql-loading-data-from-table-in-batches-tips/" target="_self">
+          <img src="/img/mysql.png" srcset="/img/loading.gif" lazyload alt="MySQL 从表中分批读取数据技巧">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2023/12/28/mysql-loading-data-from-table-in-batches-tips/" target="_self">
+          MySQL 从表中分批读取数据技巧
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2023/12/28/mysql-loading-data-from-table-in-batches-tips/" target="_self">
+          
+          
+            
+          
+          前言有时候我们的程序需要读取大量的表数据，最简单的方法就是直接全部读出：
+1select * from user where category = 1
+
+表数据量不大的时候，这样问题不大。
+但当表数据的时候大的时候，会导致 MySQL 短时间压力过大，而且将如此多的数据读到内存中，程序占用的内存也会比较大。
+利索当然的，我们会想要分批处理数据。
+通过分页（order, offset, limit）
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-12-28 15:51" pubdate>
+              2023-12-28
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/Database/">Database</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/MySQL/">MySQL</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
         <a href="/2023/12/27/specifying-join-order-in-mysql-query/" target="_self">
           <img src="/img/mysql.png" srcset="/img/loading.gif" lazyload alt="通过 straight_join 指定 MySQL 连表查询的执行顺序改善查询性能">
         </a>
