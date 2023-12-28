@@ -6,7 +6,7 @@
   <link href="https://3vilive.github.io/atom.xml" rel="self"/>
   
   <link href="https://3vilive.github.io/"/>
-  <updated>2023-12-28T07:51:39.628Z</updated>
+  <updated>2023-12-28T07:56:15.839Z</updated>
   <id>https://3vilive.github.io/</id>
   
   <author>
@@ -21,17 +21,10 @@
     <link href="https://3vilive.github.io/2023/12/28/mysql-loading-data-from-table-in-batches-tips/"/>
     <id>https://3vilive.github.io/2023/12/28/mysql-loading-data-from-table-in-batches-tips/</id>
     <published>2023-12-28T07:51:39.000Z</published>
-    <updated>2023-12-28T07:51:39.628Z</updated>
+    <updated>2023-12-28T07:56:15.839Z</updated>
     
     
-      
-      
-        
-        
-    <summary type="html">&lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;有时候我们的程序需要读取大量的表数据，最简单的方法就是直接全部读出：&lt;/p&gt;
-&lt;figure class=&quot;highlight</summary>
-        
-      
+    <summary type="html">有时候我们的程序需要读取大量的表数据</summary>
     
     
     
