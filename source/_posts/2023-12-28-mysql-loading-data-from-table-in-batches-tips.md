@@ -2,7 +2,7 @@
 title: MySQL 从表中分批读取数据技巧
 tags:
   - MySQL
-description: ''
+description: '有时候我们的程序需要读取大量的表数据'
 index_img: img/mysql.png
 categories:
   - Database
