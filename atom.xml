@@ -6,7 +6,7 @@
   <link href="https://3vilive.github.io/atom.xml" rel="self"/>
   
   <link href="https://3vilive.github.io/"/>
-  <updated>2023-12-28T07:56:15.839Z</updated>
+  <updated>2024-02-02T09:39:35.535Z</updated>
   <id>https://3vilive.github.io/</id>
   
   <author>
@@ -15,6 +15,27 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>k3s 上从 0 到 1 部署 Drone CI 并应用</title>
+    <link href="https://3vilive.github.io/2024/02/02/drone-ci-zero-to-one-on-k3s/"/>
+    <id>https://3vilive.github.io/2024/02/02/drone-ci-zero-to-one-on-k3s/</id>
+    <published>2024-02-02T09:37:10.000Z</published>
+    <updated>2024-02-02T09:39:35.535Z</updated>
+    
+    
+    <summary type="html">Drone 是一个现代化持续集成平台，能让用户基于管道引擎自动化构建、测试、发布应用。</summary>
+    
+    
+    
+    <category term="CI" scheme="https://3vilive.github.io/categories/CI/"/>
+    
+    
+    <category term="Drone" scheme="https://3vilive.github.io/tags/Drone/"/>
+    
+    <category term="k3s" scheme="https://3vilive.github.io/tags/k3s/"/>
+    
+  </entry>
   
   <entry>
     <title>MySQL 从表中分批读取数据技巧</title>
